@@ -1,23 +1,14 @@
 ```
-# Dependencies
+# Build artifacts
 target/
-**/target/
+**/*.rs.bk
 
-# Rust specific
+# Dependencies
 Cargo.lock
-**/Cargo.lock
-*.rs.bk
-
-# Go specific
-gclaw/gclaw
-**/gclaw/gclaw
-*.go~
-**/*.go~
 
 # Logs and temp files
 *.log
 *.tmp
-*.swp
 
 # Environment
 .env
@@ -27,22 +18,8 @@ gclaw/gclaw
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Coverage reports
-coverage/
-htmlcov/
-*.coverage
-
-# Build artifacts
-dist/
-build/
-*.o
-*.obj
-*.out
 ```
