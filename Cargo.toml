@@ -1,0 +1,33 @@
+[workspace]
+members = [
+    "crates/gclaw-core",
+    "crates/gclaw-agent",
+    "crates/gclaw-providers",
+    "crates/gclaw-channels",
+    "crates/gclaw-tui",
+    "crates/gclaw-mcp",
+]
+resolver = "2"
+
+[package]
+name = "gclaw"
+version = "0.1.0"
+edition = "2021"
+license = "LGPL-2.1"
+description = "Local-first AI agent gateway"
+
+[dependencies]
+gclaw-core = { path = "crates/gclaw-core" }
+gclaw-agent = { path = "crates/gclaw-agent" }
+gclaw-providers = { path = "crates/gclaw-providers" }
+gclaw-channels = { path = "crates/gclaw-channels", features = ["all-channels"] }
+gclaw-tui = { path = "crates/gclaw-tui" }
+gclaw-mcp = { path = "crates/gclaw-mcp" }
+tokio = { version = "1", features = ["full"] }
+clap = { version = "4", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dashmap = "6"
+anyhow = "1"
+dirs = "6"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
