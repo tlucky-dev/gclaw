@@ -1,19 +1,78 @@
 ```
+# Executables
+gclaw
+gclaw_*.exe
+
 # Dependencies
+go.mod
+go.sum
 vendor/
 
 # Build artifacts
 *.o
-*.obj
 *.a
 *.so
+*.dylib
 *.dll
-*.exe
-*.out
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage*
+.nox/
+.pytest_cache/
+.mypy_cache/
+
+# Node (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+dist/
+build/
+*.min.js
+*.min.css
 
 # Go specific
 *.test
 *.prof
-go.mod
-go.sum
+
+# Temporary files
+*.tmp
+*~
+.#*
+.DS_Store
 ```

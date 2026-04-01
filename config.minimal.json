@@ -1,0 +1,53 @@
+{
+  "provider": {
+    "name": "openai",
+    "api_key": "sk-your-api-key-here",
+    "base_url": "",
+    "model": "gpt-3.5-turbo",
+    "timeout": 30
+  },
+  "memory": {
+    "type": "memory",
+    "max_size": 100,
+    "expiration": 0
+  },
+  "engine": {
+    "max_iterations": 10,
+    "temperature": 0.7,
+    "max_tokens": 2048
+  },
+  "sandbox": {
+    "enabled": true,
+    "level": "standard",
+    "timeout_seconds": 30,
+    "max_memory_mb": 512,
+    "max_cpu_percent": 50.0,
+    "max_file_size_mb": 100,
+    "shell_whitelist": ["ls", "cat", "echo", "pwd", "whoami", "date", "uname"],
+    "shell_blacklist": ["rm", "sudo", "su", "chmod", "chown", "mount", "umount", "dd"],
+    "shell_arg_patterns": ["[;&|]", "\\$\\(", "`", ">/dev/tcp/", "curl.*\\|.*sh", "wget.*\\|.*sh"],
+    "file_sandbox_root": "/tmp/gclaw-sandbox",
+    "file_reset_on_start": true,
+    "file_allowed_paths": ["/tmp", "/var/tmp"],
+    "file_blocked_paths": ["/etc", "/root", "/proc", "/sys", "/dev"],
+    "network_disabled": true,
+    "network_whitelist": [],
+    "audit_log_enabled": true,
+    "audit_log_level": "info",
+    "audit_log_path": "/var/log/gclaw/sandbox-audit.log",
+    "anomaly_detection": true,
+    "max_exec_per_minute": 60,
+    "security_integration": true,
+    "user_level_mapping": {
+      "admin": "standard",
+      "user": "standard",
+      "guest": "strict",
+      "trusted": "basic"
+    },
+    "use_gvisor": false,
+    "use_linux_namespace": true,
+    "cross_platform_compat": true,
+    "dry_run": false,
+    "verbose_logging": false
+  }
+}
