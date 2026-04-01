@@ -10,7 +10,7 @@ type Config struct {
 	Provider ProviderConfig `json:"provider"`
 	Memory   MemoryConfig   `json:"memory"`
 	Engine   EngineConfig   `json:"engine"`
-	Sandbox  SandboxConfig  `json:"sandbox,omitempty"`
+	Adapters AdaptersConfig `json:"adapters,omitempty"`
 }
 
 // SandboxConfig 沙箱配置（嵌入增强的沙箱配置）
