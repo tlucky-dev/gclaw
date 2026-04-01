@@ -61,7 +61,6 @@ echo "查询当前日期" | ./gclaw -config config.openai.json
 | `-max-iterations` | 最大迭代次数 | `./gclaw -max-iterations 5` |
 | `-temperature` | 温度参数 | `./gclaw -temperature 0.8` |
 | `-max-tokens` | 最大 Token 数 | `./gclaw -max-tokens 4096` |
-| `-feishu` | 启用飞书适配器 | `./gclaw -feishu -config config.json` |
 | `-session` | 会话 ID | `./gclaw -session my-session` |
 
 ---
@@ -253,42 +252,6 @@ echo "创建文件 test.txt" > input.txt
 
 ---
 
-### 5. 飞书适配器模式 (`-feishu`)
-
-启动 HTTP 服务器，接收飞书机器人消息。
-
-```bash
-./gclaw -feishu -config config.feishu.json
-```
-
-**配置文件要求：**
-
-```json
-{
-  "adapters": {
-    "feishu": {
-      "enabled": true,
-      "app_id": "cli_xxxxxxxxxxxxx",
-      "app_secret": "xxxxxxxxxxxxxxxxx",
-      "encrypt_key": "xxxxxxxxxxxxxxxxx",
-      "verification_token": "xxxxxxxxxxxxxxxxx",
-      "server_addr": ":8080"
-    }
-  }
-}
-```
-
-**运行效果：**
-
-```
-$ ./gclaw -feishu -config config.feishu.json
-
-飞书适配器已启动
-gclaw 运行在飞书模式下。按 Ctrl+C 退出。
-```
-
----
-
 ## 配置向导
 
 ### 配置项详解
@@ -335,7 +298,6 @@ gclaw 运行在飞书模式下。按 Ctrl+C 退出。
 |------|------|----------|------|
 | **交互模式** | `-i` | 开发调试、探索性使用 | 连续对话、上下文保持 |
 | **单次模式** | 默认 | 脚本集成、自动化 | 简单直接、易集成 |
-| **飞书模式** | `-feishu` | 企业协作、客服场景 | 无缝集成飞书 |
 
 ### 模式切换示例
 
@@ -345,9 +307,6 @@ gclaw 运行在飞书模式下。按 Ctrl+C 退出。
 
 # 切换到单次执行（新终端）
 echo "新任务" | ./gclaw -config config.json -session session-123
-
-# 后台运行飞书服务
-nohup ./gclaw -feishu -config config.json &
 ```
 
 ---
@@ -465,12 +424,12 @@ RUN go build -o gclaw ./cmd/main.go
 FROM alpine:latest
 COPY --from=builder /app/gclaw /gclaw
 COPY config.json /config.json
-ENTRYPOINT ["/gclaw", "-config", "/config.json", "-feishu"]
+ENTRYPOINT ["/gclaw", "-config", "/config.json"]
 ```
 
 ```bash
 docker build -t gclaw .
-docker run -d -p 8080:8080 gclaw
+docker run -d gclaw
 ```
 
 ---
@@ -606,14 +565,6 @@ echo "test" | ./gclaw -config config.json
     "security_integration": true,
     "dry_run": false,
     "verbose_logging": true
-  },
-  "adapters": {
-    "feishu": {
-      "enabled": false,
-      "app_id": "",
-      "app_secret": "",
-      "server_addr": ":8080"
-    }
   }
 }
 ```

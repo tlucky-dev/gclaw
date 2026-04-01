@@ -2,21 +2,16 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"flag"
 	"fmt"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 
-	"gclaw/internal/adapters/feishu"
 	"gclaw/internal/config"
 	"gclaw/internal/engine"
 	"gclaw/internal/memory"
 	"gclaw/internal/provider"
 	"gclaw/internal/tools"
-	"gclaw/pkg/types"
 )
 
 const (
@@ -34,7 +29,6 @@ func main() {
 	providerName := flag.String("provider", "openai", "LLM provider name")
 	sessionID := flag.String("session", "default", "Session ID")
 	interactive := flag.Bool("i", false, "Interactive mode")
-	enableFeishu := flag.Bool("feishu", false, "Enable Feishu adapter")
 	
 	// 沙箱相关参数
 	sandboxLevel := flag.String("sandbox-level", "", "Sandbox isolation level (none|basic|standard|strict)")
@@ -131,7 +125,6 @@ func main() {
 	toolRegistry.Register(tools.NewFileReadTool())
 	toolRegistry.Register(tools.NewFileWriteTool())
 	toolRegistry.Register(tools.NewSearchTool())
-	toolRegistry.Register(tools.NewFeishuTool()) // 注册飞书工具
 
 	// 创建引擎
 	eng := engine.NewGCLawEngine(
@@ -143,36 +136,11 @@ func main() {
 		cfg.Engine.MaxTokens,
 	)
 
-	// 创建上下文，支持优雅退出
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// 处理信号
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sigChan
-		fmt.Println("\n收到退出信号，正在关闭...")
-		cancel()
-	}()
-
-	// 启动飞书适配器（如果启用）
-	if *enableFeishu || (cfg.Adapters.Feishu != nil && cfg.Adapters.Feishu.Enabled) {
-		if err := startFeishuAdapter(ctx, cfg, eng); err != nil {
-			fmt.Fprintf(os.Stderr, "启动飞书适配器失败：%v\n", err)
-			os.Exit(1)
-		}
-	}
-
 	// 处理输入
 	if *interactive {
 		runInteractiveMode(eng, *sessionID)
-	} else if !*enableFeishu && (cfg.Adapters.Feishu == nil || !cfg.Adapters.Feishu.Enabled) {
-		runSingleMode(eng, *sessionID)
 	} else {
-		// 仅飞书模式，等待信号
-		fmt.Println("gclaw 运行在飞书模式下。按 Ctrl+C 退出。")
-		<-ctx.Done()
+		runSingleMode(eng, *sessionID)
 	}
 }
 
@@ -321,68 +289,6 @@ func initConfigFile(providerType string) error {
 	fmt.Println("\nTo run gclaw with this config:")
 	fmt.Printf("  gclaw -i -config %s\n", filename)
 	
-	return nil
-}
-
-// startFeishuAdapter 启动飞书适配器
-func startFeishuAdapter(ctx context.Context, cfg *config.Config, eng engine.Engine) error {
-	if cfg.Adapters.Feishu == nil {
-		return fmt.Errorf("飞书配置未找到")
-	}
-
-	feishuCfg := cfg.Adapters.Feishu
-	if !feishuCfg.Enabled {
-		return nil
-	}
-
-	// 验证必要配置
-	if feishuCfg.AppID == "" || feishuCfg.AppSecret == "" {
-		return fmt.Errorf("飞书 app_id 和 app_secret 不能为空")
-	}
-
-	// 创建飞书适配器
-	adapter := feishu.NewAdapter(feishu.Config{
-		AppID:             feishuCfg.AppID,
-		AppSecret:         feishuCfg.AppSecret,
-		EncryptKey:        feishuCfg.EncryptKey,
-		VerificationToken: feishuCfg.VerificationToken,
-	})
-
-	// 创建 HTTP 服务器
-	serverAddr := feishuCfg.ServerAddr
-	if serverAddr == "" {
-		serverAddr = ":8080"
-	}
-	
-	server := feishu.NewServer(adapter, serverAddr)
-
-	// 启动消息处理循环
-	go server.ProcessMessages(ctx, func(msg types.Message) error {
-		// 使用引擎处理消息
-		response, err := eng.Run(msg.ConversationID, msg.Content)
-		if err != nil {
-			fmt.Printf("处理消息错误：%v\n", err)
-			return err
-		}
-
-		// 发送回复到飞书
-		if err := adapter.SendMessage(msg.ConversationID, response.Message.Content); err != nil {
-			fmt.Printf("发送回复失败：%v\n", err)
-			return err
-		}
-
-		fmt.Printf("已回复飞书消息：%s -> %s\n", msg.ConversationID, response.Message.Content)
-		return nil
-	})
-
-	// 启动 HTTP 服务器（阻塞）
-	go func() {
-		if err := server.Start(ctx); err != nil {
-			fmt.Fprintf(os.Stderr, "飞书 HTTP 服务器错误：%v\n", err)
-		}
-	}()
-
-	fmt.Println("飞书适配器已启动")
 	return nil
 }
 

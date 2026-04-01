@@ -10,7 +10,6 @@ type Config struct {
 	Provider ProviderConfig `json:"provider"`
 	Memory   MemoryConfig   `json:"memory"`
 	Engine   EngineConfig   `json:"engine"`
-	Adapters AdaptersConfig `json:"adapters,omitempty"`
 	Sandbox  SandboxConfig  `json:"sandbox,omitempty"`
 }
 
@@ -43,21 +42,6 @@ type SandboxConfig struct {
 	CrossPlatformCompat  bool                    `json:"cross_platform_compat"`
 	DryRun               bool                    `json:"dry_run"`
 	VerboseLogging       bool                    `json:"verbose_logging"`
-}
-
-// AdaptersConfig 适配器配置
-type AdaptersConfig struct {
-	Feishu *FeishuConfig `json:"feishu,omitempty"`
-}
-
-// FeishuConfig 飞书配置
-type FeishuConfig struct {
-	Enabled           bool   `json:"enabled"`
-	AppID             string `json:"app_id"`
-	AppSecret         string `json:"app_secret"`
-	EncryptKey        string `json:"encrypt_key,omitempty"`
-	VerificationToken string `json:"verification_token,omitempty"`
-	ServerAddr        string `json:"server_addr"` // HTTP 服务器监听地址，如 ":8080"
 }
 
 // ProviderConfig 提供商配置
