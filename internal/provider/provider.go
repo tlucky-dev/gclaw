@@ -157,6 +157,10 @@ func GetProviderFactory(name string) (ProviderFactory, error) {
 		return func(apiKey, baseURL, model string, timeout int) Provider {
 			return NewAnthropicProvider(apiKey, baseURL, model, timeout)
 		}, nil
+	case "modelscope":
+		return func(apiKey, baseURL, model string, timeout int) Provider {
+			return NewModelScopeProvider(apiKey, baseURL, model, timeout)
+		}, nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", name)
 	}
