@@ -13,6 +13,7 @@ const (
 	ErrMemory          ErrorCode = "memory_error"
 	ErrEngine          ErrorCode = "engine_error"
 	ErrInvalidRequest  ErrorCode = "invalid_request"
+	ErrValidation      ErrorCode = "validation_error"
 )
 
 // GCLawError 自定义错误类型
